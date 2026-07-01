@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>増毛町 | MASHIKE TOWN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+@charset 'UTF-8';
+
+:root {
+  --navy:     #1a2e3b;
+  --navy-mid: #243545;
+  --cream:    #f5f0e8;
+  --white:    #ffffff;
+  --green:    #4a8c7a;
+  --green-lt: #a8c8b8;
+  --rust:     #b85c38;
+  --sand:     #d4c5a9;
+  --text:     #2c2c2c;
+  --text-lt:  #6b6b6b;
+  --oswald: 'Oswald', sans-serif;
+  --noto:   'Noto Sans JP', sans-serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --radius: 2px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--noto); color: var(--text); background: var(--cream); overflow-x: hidden; }
+img { max-width: 100%; height: auto; display: block; }
+a { text-decoration: none; color: inherit; }
+
+#loading {
+  position: fixed; inset: 0; background: var(--navy); z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.6s var(--ease), visibility 0.6s;
+}
+#loading.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.loading-inner { text-align: center; }
+.loading-jp { display: block; font-family: var(--noto); font-size: clamp(1rem, 4vw, 1.5rem); color: var(--green-lt); letter-spacing: 0.4em; margin-bottom: 0.25rem; }
+.loading-en { display: block; font-family: var(--oswald); font-size: clamp(2.5rem, 8vw, 5rem); color: var(--white); letter-spacing: 0.2em; font-weight: 300; margin-bottom: 2rem; }
+.loading-bar { width: 200px; height: 1px; background: rgba(255,255,255,0.2); margin: 0 auto; overflow: hidden; }
+.loading-bar-fill { height: 100%; background: var(--green-lt); width: 0; animation: loadbar 1.6s var(--ease) forwards; }
+@keyframes loadbar { to { width: 100%; } }
+
+#nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 2rem; transition: background 0.4s, padding 0.4s;
+}
+#nav.scrolled { background: rgba(26, 46, 59, 0.96); backdrop-filter: blur(8px); padding: 0.75rem 2rem; }
+.nav-logo { font-family: var(--oswald); font-size: 1.4rem; font-weight: 600; color: var(--white); letter-spacing: 0.15em; }
+.btn-hamburger { background: none; border: none; cursor: pointer; padding: 0.5rem; display: flex; flex-direction: column; gap: 5px; }
+.btn-hamburger span { display: block; width: 26px; height: 1.5px; background: var(--white); transition: transform 0.3s, opacity 0.3s; }
+#menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; opacity: 0; visibility: hidden; transition: opacity 0.4s, visibility 0.4s; }
+#menu-overlay.active { opacity: 1; visibility: visible; }
+#menu-panel { position: fixed; top: 0; right: 0; width: min(360px, 85vw); height: 100vh; background: var(--navy); z-index: 200; padding: 2rem; transform: translateX(100%); transition: transform 0.5s var(--ease); display: flex; flex-direction: column; gap: 2.5rem; }
+#menu-panel.open { transform: translateX(0); }
+#menu-close { align-self: flex-end; background: none; border: 1px solid rgba(255,255,255,0.3); color: var(--white); font-size: 1.1rem; width: 2.5rem; height: 2.5rem; border-radius: 50%; cursor: pointer; transition: background 0.3s; }
+#menu-close:hover { background: rgba(255,255,255,0.1); }
+.menu-list { list-style: none; }
+.menu-list li { border-bottom: 1px solid rgba(255,255,255,0.08); }
+.menu-list a { display: block; padding: 1rem 0; font-family: var(--oswald); font-size: 1.3rem; font-weight: 300; color: var(--white); letter-spacing: 0.05em; transition: color 0.3s, padding-left 0.3s; }
+.menu-list a:hover { color: var(--green-lt); padding-left: 0.5rem; }
+.btn-line { display: block; background: #06C755; color: var(--white); text-align: center; padding: 1rem; font-family: var(--noto); font-size: 0.9rem; font-weight: 500; border-radius: var(--radius); transition: opacity 0.3s; }
+.btn-line:hover { opacity: 0.85; }
+
+.section-eyebrow { font-family: var(--oswald); font-size: 0.75rem; font-weight: 400; letter-spacing: 0.25em; color: var(--green); text-transform: uppercase; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+.section-eyebrow::after { content: ''; flex: 1; max-width: 3rem; height: 1px; background: currentColor; }
+.section-title { font-family: var(--oswald); font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 600; line-height: 1.1; letter-spacing: 0.02em; color: var(--navy); }
+.btn-primary { display: inline-block; background: var(--navy); color: var(--white); padding: 0.875rem 2rem; font-family: var(--noto); font-size: 0.9rem; font-weight: 500; letter-spacing: 0.05em; border-radius: var(--radius); transition: background 0.3s, transform 0.2s; }
+.btn-primary:hover { background: var(--green); transform: translateY(-1px); }
+.btn-primary--light { background: var(--white); color: var(--navy); }
+.btn-primary--light:hover { background: var(--cream); }
+.btn-ghost { display: inline-block; border: 1px solid var(--navy); color: var(--navy); padding: 0.6rem 1.25rem; font-size: 0.85rem; font-family: var(--noto); border-radius: var(--radius); transition: background 0.3s, color 0.3s; }
+.btn-ghost:hover { background: var(--navy); color: var(--white); }
+.reveal { opacity: 0; transform: translateY(2rem); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ボタンラッパー（各セクション末尾） */
+.section-btn-wrap {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+.btn-section-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1.5px solid var(--navy);
+  color: var(--navy);
+  padding: 0.85rem 2rem;
+  font-family: var(--oswald);
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  border-radius: var(--radius);
+  transition: background 0.3s, color 0.3s, transform 0.2s;
+}
+.btn-section-link:hover { background: var(--navy); color: var(--white); transform: translateY(-1px); }
+.btn-section-link--white {
+  border-color: rgba(255,255,255,0.6);
+  color: var(--white);
+}
+.btn-section-link--white:hover { background: rgba(255,255,255,0.15); color: var(--white); }
+
+.hero { position: relative; height: 100svh; min-height: 600px; display: flex; align-items: flex-end; padding: 6rem 2rem 4rem; overflow: hidden; }
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;       /* 追加 */
+  height: 100%;      /* 追加 */
+  object-fit: cover; /* 追加：画像の縦横比を保って全画面を覆う */
+  z-index: 0;
+  /* background: url(...) の行は削除 */
+}
+.hero-content { position: relative; z-index: 2; color: var(--white); }
+.hero-eyebrow { font-family: var(--oswald); font-size: 0.8rem; letter-spacing: 0.3em; color: var(--green-lt); margin-bottom: 0.5rem; }
+.hero-title { font-family: var(--oswald); font-size: clamp(3.5rem, 12vw, 9rem); font-weight: 600; line-height: 0.9; letter-spacing: -0.01em; color: var(--white); }
+.hero-sub { font-family: var(--oswald); font-size: clamp(1rem, 3vw, 1.8rem); font-weight: 300; letter-spacing: 0.3em; color: var(--green-lt); margin-top: 0.5rem; }
+.hero-desc { font-size: 0.95rem; color: rgba(255,255,255,0.8); margin-top: 1.25rem; line-height: 1.8; }
+.hero-scroll { position: absolute; right: 2rem; bottom: 3rem; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 0.75rem; color: rgba(255,255,255,0.6); }
+.hero-scroll span { font-family: var(--oswald); font-size: 0.65rem; letter-spacing: 0.2em; writing-mode: vertical-rl; }
+.hero-scroll-line { width: 1px; height: 3rem; background: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent); animation: scrollline 2s ease-in-out infinite; }
+@keyframes scrollline { 0%, 100% { transform: scaleY(1); opacity: 1; } 50% { transform: scaleY(0.5); opacity: 0.5; } }
+
+.purpose { background: var(--navy); padding: 5rem 2rem; }
+.purpose-inner { max-width: 1100px; margin: 0 auto; }
+.purpose .section-eyebrow { color: var(--green-lt); }
+.purpose .section-eyebrow::after { background: var(--green-lt); }
+.purpose .section-title { color: var(--white); margin-bottom: 3rem; }
+.purpose-card { background: var(--navy-mid); padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; position: relative; transition: background 0.3s; cursor: pointer; }
+.purpose-card:hover { background: var(--green); }
+.purpose-card--line:hover { background: #06C755; }
+.purpose-icon { font-size: 2rem; margin-bottom: 0.25rem; }
+.purpose-card p { font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.6; }
+.purpose-arrow { position: absolute; right: 1.5rem; bottom: 1.5rem; font-size: 1.2rem; color: var(--green-lt); transition: transform 0.3s, color 0.3s; }
+.purpose-card:hover .purpose-arrow { transform: translateX(4px); color: var(--white); }
+
+/* --- 修正・追加 --- */
+
+/* 1. デフォルト（スマホ）は1列にして、文字も少し小さくする */
+.purpose-grid { 
+  display: grid; 
+  grid-template-columns: 1fr; /* スマホは縦1列 */
+  gap: 1px; 
+  background: rgba(255,255,255,0.08); 
+}
+
+.purpose-card h3 { 
+  font-family: var(--noto); 
+  /* clampを使ってスマホでは1.5rem、画面幅に応じて最大2remになるよう可変にします */
+  font-size: clamp(1.5rem, 5vw, 2rem); 
+  font-weight: 500; 
+  color: var(--white); 
+}
+
+/* 2. タブレットサイズ（600px以上）になったら横2列にする */
+@media (min-width: 600px) {
+  .purpose-grid { 
+    grid-template-columns: repeat(2, 1fr); 
+  }
+}
+
+/* 3. PCサイズ（960px以上）になったら横3列（3列×2段）にする */
+@media (min-width: 960px) {
+  .purpose-grid { 
+    grid-template-columns: repeat(3, 1fr); 
+  }
+}
+
+
+.about { display: grid; grid-template-columns: 1fr; }
+.about-image img { width: 100%; height: 50vw; min-height: 280px; max-height: 500px; object-fit: cover; }
+.about-content { background: var(--white); padding: 3.5rem 2rem; }
+.about-text { font-size: 0.95rem; line-height: 2; color: var(--text); margin: 1.5rem 0 2rem; }
+
+.spots { padding: 5rem 2rem; background: var(--white); }
+.spots-inner { max-width: 1100px; margin: 0 auto; }
+.spots .section-title { margin-bottom: 2.5rem; }
+.spots-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+.spot-card { background: var(--white); overflow: hidden; border-radius: var(--radius); display: grid; grid-template-columns: 140px 1fr; }
+.spot-card img { width: 140px; height: 140px; object-fit: cover; }
+.spot-card-content { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.spot-tag { font-size: 0.7rem; letter-spacing: 0.1em; background: var(--navy); color: var(--white); padding: 0.2rem 0.6rem; align-self: flex-start; border-radius: var(--radius); }
+.spot-card h3 { font-family: var(--noto); font-size: 1rem; font-weight: 500; }
+.spot-card p { font-size: 0.82rem; color: var(--text-lt); line-height: 1.7; }
+
+.gourmet { padding: 5rem 2rem; background: var(--cream); }
+.gourmet-inner { max-width: 1100px; margin: 0 auto; }
+.gourmet .section-title { margin-bottom: 0.75rem; }
+.gourmet-desc { font-size: 0.9rem; color: var(--text-lt); margin-bottom: 2rem; }
+.gourmet-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+.tab-btn { background: none; border: 1px solid var(--sand); color: var(--text-lt); padding: 0.5rem 1.1rem; font-size: 0.85rem; font-family: var(--noto); border-radius: 99px; cursor: pointer; transition: background 0.3s, color 0.3s, border-color 0.3s; }
+.tab-btn.active, .tab-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+.gourmet-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+.gourmet-card { background: var(--cream); border-radius: var(--radius); overflow: hidden; display: grid; grid-template-columns: 120px 1fr; transition: opacity 0.3s; }
+.gourmet-card.hidden { display: none; }
+.gourmet-card img { width: 120px; height: 120px; object-fit: cover; }
+.gourmet-card-content { padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.gourmet-tag { font-size: 0.7rem; letter-spacing: 0.05em; background: var(--green); color: var(--white); padding: 0.15rem 0.5rem; align-self: flex-start; border-radius: var(--radius); }
+.gourmet-card h3 { font-size: 0.95rem; font-weight: 500; }
+.gourmet-card p { font-size: 0.8rem; color: var(--text-lt); }
+
+/*hotel*/
+.gourmet2 { padding: 5rem 2rem; background: var(--white); }
+.gourmet2-inner { max-width: 1100px; margin: 0 auto; }
+.gourmet2 .section-title { margin-bottom: 0.75rem; }
+.gourmet2-desc { font-size: 0.9rem; color: var(--text-lt); margin-bottom: 2rem; }
+.gourmet2-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+.tab-btn2 { background: none; border: 1px solid var(--sand); color: var(--text-lt); padding: 0.5rem 1.1rem; font-size: 0.85rem; font-family: var(--noto); border-radius: 99px; cursor: pointer; transition: background 0.3s, color 0.3s, border-color 0.3s; }
+.tab-btn2.active, .tab-btn2:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+.gourmet2-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+.gourmet2-card { background: var(--white); border-radius: var(--radius); overflow: hidden; display: grid; grid-template-columns: 120px 1fr; transition: opacity 0.3s; }
+.gourmet2-card.hidden { display: none; }
+.gourmet2-card img { width: 120px; height: 120px; object-fit: cover; }
+.gourmet2-card-content { padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.gourmet2-tag { font-size: 0.7rem; letter-spacing: 0.05em; background: var(--green); color: var(--white); padding: 0.15rem 0.5rem; align-self: flex-start; border-radius: var(--radius); }
+.gourmet2-card h3 { font-size: 0.95rem; font-weight: 500; }
+.gourmet2-card p { font-size: 0.8rem; color: var(--text-lt); }
+
+
+.sns { padding: 5rem 2rem; background: var(--cream); }
+.sns-inner { max-width: 1100px; margin: 0 auto; }
+.sns .section-title { margin-bottom: 2.5rem; }
+
+/* ===== SNSパネル ===== */
+.sns-panels { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+.sns-panel {
+  background: var(--white); border-radius: 6px; overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  display: flex; flex-direction: column;
+}
+
+/* ヘッダー */
+.sns-panel-header {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  flex-shrink: 0;
+}
+.sns-panel-icon {
+  width: 2.2rem; height: 2.2rem; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.sns-panel-icon svg { width: 1.15rem; height: 1.15rem; }
+.sns-panel-icon--ig   { background: linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); }
+.sns-panel-icon--tt   { background: #010101; }
+.sns-panel-icon--yt   { background: #FF0000; }
+.sns-panel-icon--blog { background: var(--navy); }
+.sns-panel-meta { flex: 1; min-width: 0; }
+.sns-panel-name {
+  font-family: var(--oswald); font-size: 0.95rem; font-weight: 600;
+  color: var(--navy); letter-spacing: 0.04em; line-height: 1.2;
+}
+.sns-panel-handle { font-size: 0.72rem; color: var(--text-lt); margin-top: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sns-panel-follow {
+  display: inline-flex; align-items: center;
+  border: 1.5px solid var(--navy); color: var(--navy);
+  padding: 0.35rem 0.85rem; font-size: 0.75rem; font-family: var(--oswald);
+  letter-spacing: 0.06em; border-radius: 99px; white-space: nowrap;
+  transition: background 0.25s, color 0.25s; flex-shrink: 0;
+}
+.sns-panel-follow:hover { background: var(--navy); color: var(--white); }
+
+/* ボディ */
+.sns-panel-body { padding: 1rem; flex: 1; }
+
+/* Instagram埋め込み */
+.sns-embed-ig { max-width: 100%; overflow: hidden; }
+.sns-embed-ig blockquote { margin: 0 !important; min-width: 0 !important; width: 100% !important; }
+
+/* YouTubeレスポンシブ */
+.sns-yt-wrap {
+  position: relative; width: 100%; padding-top: 56.25%; /* 16:9 */
+  background: #000; border-radius: 4px; overflow: hidden;
+}
+.sns-yt-wrap iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border: none;
+}
+/* ブログiframeラッパー */
+.sns-blog-wrap {
+  width: 100%; border-radius: 4px; overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.sns-blog-wrap iframe { display: block; width: 100%; height: 420px; border: none; }
+
+/* TikTokプレビューリンク */
+.sns-tt-link {
+  display: flex; gap: 1rem; align-items: center;
+  padding: 0.85rem; background: var(--cream); border-radius: 4px;
+  transition: opacity 0.25s;
+}
+.sns-tt-link:hover { opacity: 0.78; }
+.sns-tt-thumb {
+  width: 80px; height: 80px; object-fit: cover;
+  border-radius: 4px; flex-shrink: 0;
+}
+.sns-tt-info { display: flex; flex-direction: column; gap: 0.25rem; }
+.sns-tt-label { font-size: 0.65rem; font-family: var(--oswald); letter-spacing: 0.1em; color: var(--green); text-transform: uppercase; }
+.sns-tt-title { font-size: 0.88rem; font-weight: 500; color: var(--navy); line-height: 1.4; }
+.sns-tt-sub { font-size: 0.74rem; color: var(--text-lt); }
+
+.sns-blog-wrap iframe {
+  pointer-events: none;
+}
+
+
+@media (min-width: 640px) {
+  .sns-panels { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+}
+
+
+.furusato { position: relative; padding: 6rem 2rem; text-align: center; overflow: hidden; }
+.furusato-bg { position: absolute; inset: 0; background: linear-gradient(rgba(26,46,59,0.85), rgba(26,46,59,0.85)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80') center / cover no-repeat; z-index: 0; }
+.furusato-content { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+.furusato-text { color: rgba(255,255,255,0.8); font-size: 0.95rem; line-height: 2; margin: 1.25rem 0 2.5rem; }
+.furusato-products { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2.5rem; }
+.furusato-item img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius); }
+.furusato-item p { color: rgba(255,255,255,0.8); font-size: 0.8rem; margin-top: 0.5rem; }
+
+.line-cta { background: var(--navy); padding: 4rem 2rem; }
+.line-cta-inner { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem; }
+.line-cta-text .section-eyebrow { color: var(--green-lt); }
+.line-cta-text .section-eyebrow::after { background: var(--green-lt); }
+.line-cta-text h2 { font-family: var(--oswald); font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--white); margin-bottom: 1.5rem; }
+.line-benefits { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+.line-benefits li { color: rgba(255,255,255,0.8); font-size: 0.95rem; line-height: 1.6; }
+.btn-line-large { display: flex; align-items: center; justify-content: center; gap: 0.75rem; background: #06C755; color: var(--white); padding: 1.1rem 2rem; font-size: 1rem; font-weight: 500; border-radius: var(--radius); transition: opacity 0.3s, transform 0.2s; }
+.btn-line-large:hover { opacity: 0.9; transform: translateY(-1px); }
+.line-note { font-size: 0.75rem; color: rgba(255,255,255,0.4); text-align: center; margin-top: 0.75rem; }
+
+.contact { padding: 5rem 2rem; background: var(--cream); }
+.contact-inner { max-width: 1100px; margin: 0 auto; }
+.contact .section-title { margin-bottom: 2.5rem; }
+.contact-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+.contact-card { background: var(--white); padding: 2rem; border-left: 3px solid var(--green); border-radius: var(--radius); }
+.contact-card h3 { font-family: var(--noto); font-size: 1rem; font-weight: 500; margin-bottom: 0.4rem; }
+.contact-card p { font-size: 0.85rem; color: var(--text-lt); margin-bottom: 1rem; line-height: 1.6; }
+
+.footer { background: var(--navy); padding: 3rem 2rem 2rem; }
+.footer-inner { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+.footer-logo { font-family: var(--oswald); font-size: 1.5rem; font-weight: 600; color: var(--white); letter-spacing: 0.15em; }
+.footer-nav, .footer-sns { display: flex; flex-wrap: wrap; gap: 1rem; }
+.footer-nav a, .footer-sns a { color: rgba(255,255,255,0.6); font-size: 0.82rem; transition: color 0.3s; }
+.footer-nav a:hover, .footer-sns a:hover { color: var(--green-lt); }
+.footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.3); border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.5rem; }
+
+@media (min-width: 640px) {
+  .purpose-grid { grid-template-columns: repeat(3, 1fr); }
+  .spots-grid { grid-template-columns: repeat(2, 1fr); }
+  .spot-card { grid-template-columns: 1fr; }
+  .spot-card img { width: 100%; height: 200px; }
+  .gourmet-grid { grid-template-columns: repeat(2, 1fr); }
+  .gourmet-card { grid-template-columns: 1fr; }
+  .gourmet-card img { width: 100%; height: 160px; }
+
+  .gourmet2-grid { grid-template-columns: repeat(2, 1fr); }
+  .gourmet2-card { grid-template-columns: 1fr; }
+  .gourmet2-card img { width: 100%; height: 160px; }
+
+  .furusato-products { grid-template-columns: repeat(4, 1fr); }
+  .contact-grid { grid-template-columns: repeat(3, 1fr); }
+  .line-cta-inner { flex-direction: row; align-items: center; }
+  .line-cta-text { flex: 1; }
+  .line-cta-btn-wrap { flex-shrink: 0; }
+}
+
+@media (min-width: 900px) {
+  .about { grid-template-columns: 1fr 1fr; min-height: 70vh; }
+  .about-image img { height: 100%; max-height: none; }
+  .about-content { padding: 6rem 4rem; display: flex; flex-direction: column; justify-content: center; }
+  .spots-grid { grid-template-columns: repeat(4, 1fr); }
+  .spot-card { grid-template-columns: 1fr; }
+  .gourmet-grid { grid-template-columns: repeat(3, 1fr); }
+  .gourmet-card { grid-template-columns: 1fr; }
+
+  .gourmet2-grid { grid-template-columns: repeat(3, 1fr); }
+  .gourmet2-card { grid-template-columns: 1fr; }
+
+  .sns-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .loading-bar-fill { animation: none; width: 100%; }
+  .hero-scroll-line { animation: none; }
+}
+  </style>
+</head>
+<body>
+
+  <div id="loading">
+    <div class="loading-inner">
+      <span class="loading-jp">増毛町</span>
+      <span class="loading-en">MASHIKE</span>
+      <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+    </div>
+  </div>
+
+  <nav id="nav">
+    <a href="index.html" class="nav-logo">MASHIKE</a>
+    <button id="menu-open" class="btn-hamburger" aria-label="メニューを開く">
+      <span></span><span></span><span></span>
+    </button>
+    <div id="menu-overlay"></div>
+    <div id="menu-panel">
+      <button id="menu-close" aria-label="メニューを閉じる">✕</button>
+      <ul class="menu-list">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="https://mashike.jp/kankou/">About</a></li>
+        <li><a href="https://www.instagram.com/mashike_official/">Instagram</a></li>
+        <li><a href="hotel.html">宿泊予約</a></li>
+        <li><a href="ec.html">オンラインショップ</a></li>
+        <li><a href="https://furusato-mashike.jp/">ふるさと納税</a></li>
+        <li><a href="#contact">お問い合わせ</a></li>
+      </ul>
+      <div class="menu-line-btn">
+        <a href="#" class="btn-line">LINE で最新情報を受け取る</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero" id="home">
+    <picture>
+  <source media="(min-width: 768px)" srcset="images/IMG_5540.jpeg">
+  <img class="hero-bg" src="images/IMG_5540.jpeg" alt="" fetchpriority="high">
+</picture>
+
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">北海道 · 日本海</p>
+      <h1 class="hero-title">増毛町</h1>
+      <p class="hero-sub">MASHIKE TOWN</p>
+      <p class="hero-desc">歴史が息づく港町。酒蔵と海と山の恵み。</p>
+    </div>
+    <div class="hero-scroll">
+      <span>SCROLL</span>
+      <div class="hero-scroll-line"></div>
+    </div>
+  </section>
+
+  <section class="purpose" id="purpose">
+    <div class="purpose-inner">
+      <p class="section-eyebrow">今日は何をしに来ましたか？</p>
+      <h2 class="section-title">WHAT ARE YOU<br>LOOKING FOR?</h2>
+      <div class="purpose-grid">
+        <a href="hotel.html" class="purpose-card">
+          <div class="purpose-icon"></div>
+          <h3>泊まる</h3>
+          <p>増毛町の宿を探す・予約する</p>
+          <span class="purpose-arrow">→</span>
+        </a>
+        <a href="ec.html" class="purpose-card">
+          <div class="purpose-icon"></div>
+          <h3>買う</h3>
+          <p>ウニ・カニ・りんご・地酒</p>
+          <span class="purpose-arrow">→</span>
+        </a>
+        <a href="https://mashike.jp/kankou/" class="purpose-card">
+          <div class="purpose-icon"></div>
+          <h3>観光</h3>
+          <p>見どころ・モデルコース</p>
+          <span class="purpose-arrow">→</span>
+        </a>
+        <a href="https://furusato-mashike.jp/" class="purpose-card">
+          <div class="purpose-icon"></div>
+          <h3>ふるさと納税</h3>
+          <p>増毛町を応援する</p>
+          <span class="purpose-arrow">→</span>
+        </a>
+        <a href="https://www.instagram.com/mashike_official/" class="purpose-card">
+          <div class="purpose-icon"></div>
+          <h3>Instagram</h3>
+          <p>増毛町の魅力を知る</p>
+          <span class="purpose-arrow">→</span>
+        </a>
+        <a href="#" class="purpose-card purpose-card--line">
+          <div class="purpose-icon"></div>
+          <h3>LINE</h3>
+          <p>旬の情報をプッシュ通知で受け取る</p>
+          <span class="purpose-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="about-image">
+      <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80" alt="増毛町の風景">
+    </div>
+    <div class="about-content">
+      <p class="section-eyebrow">About Mashike</p>
+      <h2 class="section-title">増毛町について</h2>
+      <p class="about-text">
+        日本海と暑寒別岳に挟まれた、自然豊かな港町。<br>
+        道内最北の酒蔵「国稀酒造」、歴史的レトロ建築、<br>
+        そして海と山の恵みが詰まった食材。<br><br>
+        りんご・もも・たこ・えび・にしん——<br>
+        美味しい食材と日本酒の相性は格別です。
+      </p>
+      <a href="https://mashike.jp/kankou/" class="btn-primary">詳しくはこちら</a>
+    </div>
+  </section>
+
+ <section class="sns" id="sns">
+    <div class="sns-inner">
+      <p class="section-eyebrow">Follow Us</p>
+      <h2 class="section-title">SNS</h2>
+      <div class="sns-panels">
+
+        <!-- Instagram -->
+        <div class="sns-panel">
+          <div class="sns-panel-header">
+            <div class="sns-panel-icon sns-panel-icon--ig">
+              <svg viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </div>
+            <div class="sns-panel-meta">
+              <div class="sns-panel-name">Instagram</div>
+              <div class="sns-panel-handle">@mashike_official</div>
+            </div>
+            <a href="https://www.instagram.com/mashike_official/" target="_blank" rel="noopener" class="sns-panel-follow">フォロー</a>
+          </div>
+          <div class="sns-panel-body">
+            <div class="sns-embed-ig">
+              <blockquote class="instagram-media"
+                data-instgrm-permalink="https://www.instagram.com/p/DZTEQ8CTYkq/?utm_source=ig_embed&utm_campaign=loading"
+                data-instgrm-version="14"
+                style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,.5),0 1px 10px 0 rgba(0,0,0,.15);margin:0;max-width:100%;padding:0;width:100%;">
+              </blockquote>
+              <script async src="https://www.instagram.com/embed.js"></script>
+            </div>
+          </div>
+        </div>
+
+        <!-- TikTok -->
+        <div class="sns-panel">
+          <div class="sns-panel-header">
+            <div class="sns-panel-icon sns-panel-icon--tt">
+              <svg viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+            </div>
+            <div class="sns-panel-meta">
+              <div class="sns-panel-name">TikTok</div>
+              <div class="sns-panel-handle">@mashike_official</div>
+            </div>
+            <a href="https://www.tiktok.com/@mashike_official" target="_blank" rel="noopener" class="sns-panel-follow">フォロー</a>
+          </div>
+          <div class="sns-panel-body">
+            <div class="sns-embed-ig">
+              <img src="images/noimage-760x460.png" alt="">
+            </div>
+          </div>
+        </div>
+
+        <!-- YouTube -->
+        <div class="sns-panel">
+          <div class="sns-panel-header">
+            <div class="sns-panel-icon sns-panel-icon--yt">
+              <svg viewBox="0 0 24 24" fill="white"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </div>
+            <div class="sns-panel-meta">
+              <div class="sns-panel-name">YouTube</div>
+              <div class="sns-panel-handle">増毛町公式チャンネル</div>
+            </div>
+            <a href="https://www.youtube.com/@mashike" target="_blank" rel="noopener" class="sns-panel-follow">登録</a>
+          </div>
+          <div class="sns-panel-body">
+            <div class="sns-yt-wrap">
+              <iframe
+                src="https://www.youtube.com/embed/GyqU_0lf86Q?si=FDxkNN4xF9e-dHM4"
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+        </div>
+
+        <!-- 町長ブログ -->
+        <div class="sns-panel">
+          <div class="sns-panel-header">
+            <div class="sns-panel-icon sns-panel-icon--blog">
+              <svg viewBox="0 0 24 24" fill="white"><path d="M6.5 10h-2v7h2v-7zm6 0h-2v7h2v-7zm8.5 9H2v2h19v-2zm-2.5-9h-2v7h2v-7zM11.5 1L2 6v2h19V6l-9.5-5z"/></svg>
+            </div>
+            <div class="sns-panel-meta">
+              <div class="sns-panel-name">町長ブログ</div>
+              <div class="sns-panel-handle">毎日更新中</div>
+            </div>
+            <a href="http://mashikeclmn.sblo.jp/" target="_blank" rel="noopener" class="sns-panel-follow">読む</a>
+          </div>
+          <div class="sns-panel-body">
+            <div class="sns-blog-wrap">
+              <iframe src="http://mashikeclmn.sblo.jp/" title="町長ブログ" loading="lazy"></iframe>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+   <!-- 観光スポット（ボタン追加） -->
+  <section class="spots" id="spots">
+    <div class="spots-inner">
+      <p class="section-eyebrow">Tourism</p>
+      <h2 class="section-title">観光スポット</h2>
+      <div class="spots-grid">
+        <div class="spot-card reveal">
+          <img src="images/IMG_5531.jpeg" alt="国稀酒造">
+          <div class="spot-card-content">
+            <span class="spot-tag">酒造</span>
+            <h3>国稀酒造</h3>
+            <p>道内最北の酒蔵。創業明治15年の歴史ある蔵元。</p>
+          </div>
+        </div>
+        <div class="spot-card reveal">
+          <img src="images/旧商家丸一本間家.jpg" alt="レトロ建築">
+          <div class="spot-card-content">
+            <span class="spot-tag">歴史</span>
+            <h3>旧商家丸一本間家</h3>
+            <p>明治時代の繁栄を伝える歴史的建造物。</p>
+          </div>
+        </div>
+        <div class="spot-card reveal">
+          <img src="images/IMG_5589.JPG" alt="果物狩り">
+          <div class="spot-card-content">
+            <span class="spot-tag">体験</span>
+            <h3>果物狩り</h3>
+            <p>りんご・もも・ぶどう。季節の摘み取り体験。</p>
+          </div>
+        </div>
+        <div class="spot-card reveal">
+          <img src="images/IMG_5538.jpeg" alt="自然">
+          <div class="spot-card-content">
+            <span class="spot-tag">自然</span>
+            <h3>暑寒別天売焼尻国定公園</h3>
+            <p>雄大な自然とキャンプ・トレッキング。</p>
+          </div>
+        </div>
+      </div>
+      <!-- ★ ホテル一覧へのボタン -->
+      <div class="section-btn-wrap reveal">
+        <a href="https://mashike.jp/kankou/" class="btn-section-link">
+          観光情報はこちら &nbsp;→
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- オンラインショップ（ボタン追加） -->
+  <section class="gourmet" id="gourmet">
+    <div class="gourmet-inner">
+      <p class="section-eyebrow">shop</p>
+      <h2 class="section-title">オンラインショップ</h2>
+      <p class="gourmet-desc">増毛町内の特産品をカテゴリから探せます。</p>
+      <div class="gourmet-tabs">
+        <button class="tab-btn active" data-tab="all">すべて</button>
+        <button class="tab-btn" data-tab="seafood">海鮮</button>
+        <button class="tab-btn" data-tab="fruit">果物</button>
+        <button class="tab-btn" data-tab="others">その他</button>
+      </div>
+      <div class="gourmet-grid" id="gourmet-grid">
+        <div class="gourmet-card reveal" data-category="seafood">
+          <img src="images/katosuisan.png" alt="海鮮料理">
+          <div class="gourmet-card-content">
+            <span class="gourmet-tag">海鮮</span>
+            <h3>加藤水産</h3>
+            <a href="https://shop-katosuisan.shop-pro.jp/?mode=f1" class="btn-ghost">詳細を見る →</a>
+          </div>
+        </div>
+        <div class="gourmet-card reveal" data-category="fruit">
+          <img src="images/ogawakajuen.webp" alt="日本酒">
+          <div class="gourmet-card-content">
+            <span class="gourmet-tag">果物</span>
+            <h3>小河果樹園</h3>
+            <a href="https://www.tabechoku.com/products" class="btn-ghost">詳細を見る →</a>
+          </div>
+        </div>
+        <div class="gourmet-card reveal" data-category="others">
+          <img src="images/IMG_5591.JPG" alt="カフェ">
+          <div class="gourmet-card-content">
+            <span class="gourmet-tag">その他</span>
+            <h3>國稀酒造</h3>
+            <a href="https://www.kunimare.co.jp/online_shop/products/list" class="btn-ghost">詳細を見る →</a>
+          </div>
+        </div>
+        <div class="gourmet-card reveal" data-category="seafood">
+          <img src="images/ぶり.JPG" alt="海鮮丼">
+          <div class="gourmet-card-content">
+            <span class="gourmet-tag">海鮮</span>
+            <h3>（店舗名）</h3>
+            <a href="#" class="btn-ghost">詳細を見る →</a>
+          </div>
+        </div>
+        <div class="gourmet-card reveal" data-category="seafood">
+          <img src="images/鮭.JPG" alt="魚介">
+          <div class="gourmet-card-content">
+            <span class="gourmet-tag">海鮮</span>
+            <h3>（店舗名）</h3>
+            <a href="#" class="btn-ghost">詳細を見る →</a>
+          </div>
+        </div>
+        <div class="gourmet-card reveal" data-category="fruit">
+          <img src="images/ホタテ.JPG" alt="カフェ">
+          <div class="gourmet-card-content">
+            <span class="gourmet-tag">果物</span>
+            <h3>（店舗名）</h3>
+            <a href="#" class="btn-ghost">詳細を見る →</a>
+          </div>
+        </div>
+      </div>
+      <!-- ★ EC一覧へのボタン -->
+      <div class="section-btn-wrap reveal">
+        <a href="ec.html" class="btn-section-link">
+          店舗一覧すべて見る &nbsp;→
+        </a>
+      </div>
+    </div>
+  </section>
+  <!-- 宿泊施設 -->
+  <section class="gourmet2" id="gourmet2">
+    <div class="gourmet2-inner">
+      <p class="section-eyebrow">hotel</p>
+      <h2 class="section-title">宿泊施設</h2>
+      <p class="gourmet2-desc">増毛町内の宿泊施設をカテゴリから探せます。</p>
+      <div class="gourmet2-tabs">
+        <button class="tab-btn2 active" data-tab2="all">すべて</button>
+        <button class="tab-btn2" data-tab2="hotel">ホテル</button>
+        <button class="tab-btn2" data-tab2="minsyuku">民宿</button>
+        <button class="tab-btn2" data-tab2="kotezi">コテージ</button>
+      </div>
+      <div class="gourmet2-grid" id="gourmet2-grid">
+        <div class="gourmet2-card reveal" data-category2="hotel">
+          <img src="images/IMG_5592.JPG" alt="ホテル">
+          <div class="gourmet2-card-content">
+            <span class="gourmet2-tag">ホテル</span>
+            <h3>オーベルジュ増毛</h3>
+            <a href="https://www.jhpds.net/aubergemashike/uw/uwp3100/uww3101.do?yadNo=338400" class="btn-ghost">詳細を見る →</a>
+          </div>
+        </div>
+        <div class="gourmet2-card reveal" data-category2="minsyuku">
+          <img src="images/IMG_5593.JPG" alt="民宿">
+          <div class="gourmet2-card-content">
+            <span class="gourmet2-tag">民宿</span>
+            <h3>民宿たけうち</h3>
+            <a href="https://mashike.jp/kankou/minshuku/%e6%b0%91%e5%ae%bf%e3%81%9f%e3%81%91%e3%81%86%e3%81%a1/" class="btn-ghost">
+              詳細を見る →</a>
+          </div>
+        </div>
+        <div class="gourmet2-card reveal" data-category2="minsyuku">
+          <img src="images/IMG_5592.JPG" alt="民宿">
+          <div class="gourmet2-card-content">
+            <span class="gourmet2-tag">民宿</span>
+            <h3>（施設名）</h3>
+            <a href="#" class="btn-ghost">詳細を見る →</a>
+          </div>
+        </div>
+        <div class="gourmet2-card reveal" data-category2="kotezi">
+          <img src="images/IMG_5594.JPG" alt="コテージ">
+          <div class="gourmet2-card-content">
+            <span class="gourmet2-tag">コテージ</span>
+            <h3>コテージ　ミンズ</h3>
+            <a href="https://mashike.jp/kankou/other_lodging/1512/" class="btn-ghost">詳細を見る →</a>
+          </div>
+        </div>
+        <div class="gourmet2-card reveal" data-category2="hotel">
+          <img src="images/IMG_5592.JPG" alt="ホテル">
+          <div class="gourmet2-card-content">
+            <span class="gourmet2-tag">ホテル</span>
+            <h3>（施設名）</h3>
+            <a href="#" class="btn-ghost">詳細を見る →</a>
+          </div>
+        </div>
+        <div class="gourmet2-card reveal" data-category2="minsyuku">
+          <img src="images/IMG_5592.JPG" alt="民宿">
+          <div class="gourmet2-card-content">
+            <span class="gourmet2-tag">民宿</span>
+            <h3>（施設名）</h3>
+            <a href="#" class="btn-ghost">詳細を見る →</a>
+          </div>
+        </div>
+      </div>
+      <div class="section-btn-wrap reveal">
+        <a href="hotel.html" class="btn-section-link">
+          宿泊施設一覧をすべて見る &nbsp;→
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+ 
+
+  <section class="furusato" id="furusato">
+    <div class="furusato-bg"></div>
+    <div class="furusato-content">
+      <p class="section-eyebrow" style="color:#a8c8b8">Furusato Nozei</p>
+      <h2 class="section-title" style="color:#fff">ふるさと納税</h2>
+      <p class="furusato-text">増毛町を応援したい方へ。<br>税額控除を活用しながら、増毛の特産品をお届けします。</p>
+      <div class="furusato-products">
+        <div class="furusato-item reveal">
+          <img src="images/IMG_5595.JPG" alt="特産品">
+          <p>増毛産うに</p>
+        </div>
+        <div class="furusato-item reveal">
+          <img src="images/IMG_5596.JPG" alt="特産品">
+          <p>増毛りんご</p>
+        </div>
+        <div class="furusato-item reveal">
+          <img src="images/IMG_5597.JPG" alt="特産品">
+          <p>国稀 純米酒</p>
+        </div>
+        <div class="furusato-item reveal">
+          <img src="images/IMG_5598.JPG" alt="特産品">
+          <p>増毛産えび</p>
+        </div>
+      </div>
+      <a href="https://furusato-mashike.jp/" class="btn-primary btn-primary--light">ふるさと納税サイトへ →</a>
+    </div>
+  </section>
+
+  <section class="line-cta">
+    <div class="line-cta-inner">
+      <div class="line-cta-text">
+        <p class="section-eyebrow">旬の情報を逃さない</p>
+        <h2>LINE 公式アカウント</h2>
+        <ul class="line-benefits">
+          <li>・ ウニ漁解禁のお知らせ</li>
+          <li>・ りんご収穫・直売情報</li>
+          <li>・ 酒まつり先行予約</li>
+          <li>・ お得な宿泊プラン</li>
+        </ul>
+      </div>
+      <div class="line-cta-btn-wrap">
+        <a href="#" class="btn-line-large">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+          LINE で友だち追加
+        </a>
+        <p class="line-note">登録無料・いつでも退会できます</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="contact-inner">
+      <p class="section-eyebrow">Contact</p>
+      <h2 class="section-title">お問い合わせ</h2>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <h3>増毛町観光協会</h3>
+          <p>観光・宿泊に関するお問い合わせ</p>
+          <a href="tel:000-0000-0000" class="btn-ghost">📞 000-0000-0000</a>
+        </div>
+        <div class="contact-card">
+          <h3>増毛町役場</h3>
+          <p>行政・移住に関するお問い合わせ</p>
+          <a href="tel:000-0000-0000" class="btn-ghost">📞 000-0000-0000</a>
+        </div>
+        <div class="contact-card">
+          <h3>オンラインフォーム</h3>
+          <p>24時間受付・お気軽にどうぞ</p>
+          <a href="#" class="btn-ghost">メールで問い合わせる →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">MASHIKE</div>
+      <nav class="footer-nav">
+        <a href="hotel.html">宿泊予約</a>
+        <a href="ec.html">オンラインショップ</a>
+        <a href="https://furusato-mashike.jp/">ふるさと納税</a>
+        <a href="">SNS</a>
+        <a href="#contact">お問い合わせ</a>
+      </nav>
+      <div class="footer-sns">
+        <a href="https://www.instagram.com/mashike_official/" target="_blank" rel="noopener">Instagram</a>
+        <a href="#" target="_blank" rel="noopener">TikTok</a>
+        <a href="https://www.youtube.com/@mashike_official" target="_blank" rel="noopener">YouTube</a>
+        <a href="#" target="_blank" rel="noopener">LINE</a>
+      </div>
+      <p class="footer-copy">© 2026 増毛町観光協会</p>
+    </div>
+  </footer>
+
+  <script>
+window.addEventListener('load', () => {
+  setTimeout(() => { document.getElementById('loading').classList.add('hidden'); }, 1800);
+});
+
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); }, { passive: true });
+
+const menuOpen = document.getElementById('menu-open');
+const menuClose = document.getElementById('menu-close');
+const menuPanel = document.getElementById('menu-panel');
+const menuOverlay = document.getElementById('menu-overlay');
+
+function openMenu() { menuPanel.classList.add('open'); menuOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeMenu() { menuPanel.classList.remove('open'); menuOverlay.classList.remove('active'); document.body.style.overflow = ''; }
+
+menuOpen.addEventListener('click', openMenu);
+menuClose.addEventListener('click', closeMenu);
+menuOverlay.addEventListener('click', closeMenu);
+document.querySelectorAll('.menu-list a').forEach(link => link.addEventListener('click', closeMenu));
+
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => { entry.target.classList.add('visible'); }, i * 80);
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+const tabBtns = document.querySelectorAll('.tab-btn');
+const gourmetCards = document.querySelectorAll('.gourmet-card');
+tabBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    tabBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const selected = btn.dataset.tab;
+    gourmetCards.forEach(card => {
+      if (selected === 'all' || card.dataset.category === selected) { card.classList.remove('hidden'); }
+      else { card.classList.add('hidden'); }
+    });
+  });
+});
+
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', (e) => {
+    const targetId = anchor.getAttribute('href');
+    if (targetId === '#') return;
+    const target = document.querySelector(targetId);
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+const tabBtns2 = document.querySelectorAll('.tab-btn2');
+const gourmet2Cards = document.querySelectorAll('.gourmet2-card');
+tabBtns2.forEach(btn => {
+  btn.addEventListener('click', () => {
+    tabBtns2.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const selected = btn.dataset.tab2;
+    gourmet2Cards.forEach(card => {
+      if (selected === 'all' || card.dataset.category2 === selected) { card.classList.remove('hidden'); }
+      else { card.classList.add('hidden'); }
+    });
+  });
+});
+
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', (e) => {
+    const targetId = anchor.getAttribute('href');
+    if (targetId === '#') return;
+    const target = document.querySelector(targetId);
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+  </script>
+</body>
+</html>

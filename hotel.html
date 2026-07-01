@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宿泊施設一覧 | 増毛町</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --navy:     #1a2e3b;
+  --navy-mid: #243545;
+  --cream:    #f5f0e8;
+  --white:    #ffffff;
+  --green:    #4a8c7a;
+  --green-lt: #a8c8b8;
+  --rust:     #b85c38;
+  --sand:     #d4c5a9;
+  --text:     #2c2c2c;
+  --text-lt:  #6b6b6b;
+  --oswald: 'Oswald', sans-serif;
+  --noto:   'Noto Sans JP', sans-serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --radius: 2px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--noto); color: var(--text); background: var(--cream); overflow-x: hidden; }
+img { max-width: 100%; height: auto; display: block; }
+a { text-decoration: none; color: inherit; }
+
+
+#loading {
+  position: fixed; inset: 0; background: var(--navy); z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.6s var(--ease), visibility 0.6s;
+}
+#loading.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.loading-inner { text-align: center; }
+.loading-jp { display: block; font-family: var(--noto); font-size: clamp(1rem, 4vw, 1.5rem); color: var(--green-lt); letter-spacing: 0.4em; margin-bottom: 0.25rem; }
+.loading-en { display: block; font-family: var(--oswald); font-size: clamp(2.5rem, 8vw, 5rem); color: var(--white); letter-spacing: 0.2em; font-weight: 300; margin-bottom: 2rem; }
+.loading-bar { width: 200px; height: 1px; background: rgba(255,255,255,0.2); margin: 0 auto; overflow: hidden; }
+.loading-bar-fill { height: 100%; background: var(--green-lt); width: 0; animation: loadbar 1.6s var(--ease) forwards; }
+@keyframes loadbar { to { width: 100%; } }
+
+/* ===== NAV ===== */
+#nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 2rem; transition: background 0.4s, padding 0.4s;
+}
+#nav.scrolled { background: rgba(26, 46, 59, 0.96); backdrop-filter: blur(8px); padding: 0.75rem 2rem; }
+.nav-logo { font-family: var(--oswald); font-size: 1.4rem; font-weight: 600; color: var(--white); letter-spacing: 0.15em; }
+.btn-hamburger { background: none; border: none; cursor: pointer; padding: 0.5rem; display: flex; flex-direction: column; gap: 5px; }
+.btn-hamburger span { display: block; width: 26px; height: 1.5px; background: var(--white); transition: transform 0.3s, opacity 0.3s; }
+#menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; opacity: 0; visibility: hidden; transition: opacity 0.4s, visibility 0.4s; }
+#menu-overlay.active { opacity: 1; visibility: visible; }
+#menu-panel { position: fixed; top: 0; right: 0; width: min(360px, 85vw); height: 100vh; background: var(--navy); z-index: 200; padding: 2rem; transform: translateX(100%); transition: transform 0.5s var(--ease); display: flex; flex-direction: column; gap: 2.5rem; }
+#menu-panel.open { transform: translateX(0); }
+#menu-close { align-self: flex-end; background: none; border: 1px solid rgba(255,255,255,0.3); color: var(--white); font-size: 1.1rem; width: 2.5rem; height: 2.5rem; border-radius: 50%; cursor: pointer; transition: background 0.3s; }
+#menu-close:hover { background: rgba(255,255,255,0.1); }
+.menu-list { list-style: none; }
+.menu-list li { border-bottom: 1px solid rgba(255,255,255,0.08); }
+.menu-list a { display: block; padding: 1rem 0; font-family: var(--oswald); font-size: 1.3rem; font-weight: 300; color: var(--white); letter-spacing: 0.05em; transition: color 0.3s, padding-left 0.3s; }
+.menu-list a:hover { color: var(--green-lt); padding-left: 0.5rem; }
+.btn-line { display: block; background: #06C755; color: var(--white); text-align: center; padding: 1rem; font-family: var(--noto); font-size: 0.9rem; font-weight: 500; border-radius: var(--radius); transition: opacity 0.3s; }
+.btn-line:hover { opacity: 0.85; }
+
+.section-eyebrow { font-family: var(--oswald); font-size: 0.75rem; font-weight: 400; letter-spacing: 0.25em; color: var(--green); text-transform: uppercase; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+.section-eyebrow::after { content: ''; flex: 1; max-width: 3rem; height: 1px; background: currentColor; }
+.section-title { font-family: var(--oswald); font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 600; line-height: 1.1; letter-spacing: 0.02em; color: var(--navy); }
+.btn-primary { display: inline-block; background: var(--navy); color: var(--white); padding: 0.875rem 2rem; font-family: var(--noto); font-size: 0.9rem; font-weight: 500; letter-spacing: 0.05em; border-radius: var(--radius); transition: background 0.3s, transform 0.2s; }
+.btn-primary:hover { background: var(--green); transform: translateY(-1px); }
+.btn-primary--light { background: var(--white); color: var(--navy); }
+.btn-primary--light:hover { background: var(--cream); }
+.btn-ghost { display: inline-block; border: 1px solid var(--navy); color: var(--navy); padding: 0.6rem 1.25rem; font-size: 0.85rem; font-family: var(--noto); border-radius: var(--radius); transition: background 0.3s, color 0.3s; }
+.btn-ghost:hover { background: var(--navy); color: var(--white); }
+.reveal { opacity: 0; transform: translateY(2rem); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+.hero { position: relative; height: 100svh; min-height: 600px; display: flex; align-items: flex-end; padding: 6rem 2rem 4rem; overflow: hidden; }
+.hero-bg { position: absolute; inset: 0; background: url('images/IMG_5602.WEBP') center / cover no-repeat; z-index: 0; }
+.hero-content { position: relative; z-index: 2; color: var(--white); }
+.hero-eyebrow { font-family: var(--oswald); font-size: 0.8rem; letter-spacing: 0.3em; color: var(--green-lt); margin-bottom: 0.5rem; }
+.hero-title { font-family: var(--oswald); font-size: clamp(3.5rem, 12vw, 9rem); font-weight: 600; line-height: 0.9; letter-spacing: -0.01em; color: var(--white); }
+.hero-sub { font-family: var(--oswald); font-size: clamp(1rem, 3vw, 1.8rem); font-weight: 300; letter-spacing: 0.3em; color: var(--green-lt); margin-top: 0.5rem; }
+.hero-desc { font-size: 0.95rem; color: rgba(255,255,255,0.8); margin-top: 1.25rem; line-height: 1.8; }
+.hero-scroll { position: absolute; right: 2rem; bottom: 3rem; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 0.75rem; color: rgba(255,255,255,0.6); }
+.hero-scroll span { font-family: var(--oswald); font-size: 0.65rem; letter-spacing: 0.2em; writing-mode: vertical-rl; }
+.hero-scroll-line { width: 1px; height: 3rem; background: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent); animation: scrollline 2s ease-in-out infinite; }
+@keyframes scrollline { 0%, 100% { transform: scaleY(1); opacity: 1; } 50% { transform: scaleY(0.5); opacity: 0.5; } }
+
+/* ===== PAGE HERO ===== */
+.page-hero {
+  padding-top: 56px;
+  background: var(--navy);
+  position: relative;
+  overflow: hidden;
+}
+.page-hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 2rem 3rem;
+  position: relative;
+  z-index: 1;
+}
+/* 海の模様 */
+.page-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 40px,
+    rgba(74,140,122,0.04) 40px,
+    rgba(74,140,122,0.04) 80px
+  );
+  z-index: 0;
+}
+
+.breadcrumb { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; font-family: var(--oswald); font-size: 0.72rem; letter-spacing: 0.12em; color: rgba(255,255,255,0.45); }
+.breadcrumb a { color: var(--green-lt); transition: color 0.3s; }
+.breadcrumb a:hover { color: var(--white); }
+.breadcrumb span { color: rgba(255,255,255,0.25); }
+
+.page-hero-en { font-family: var(--oswald); font-size: 0.75rem; letter-spacing: 0.3em; color: var(--green-lt); margin-bottom: 0.5rem; }
+.page-hero-title { font-family: var(--oswald); font-size: clamp(2.5rem, 7vw, 5rem); font-weight: 600; color: var(--white); line-height: 1; letter-spacing: 0.02em; margin-bottom: 1rem; }
+.page-hero-desc { font-size: 0.9rem; color: rgba(255,255,255,0.65); line-height: 1.8; max-width: 480px; }
+
+.page-hero-wave { display: block; width: 100%; line-height: 0; }
+.page-hero-wave svg { display: block; width: 100%; }
+
+/* ===== FILTER BAR ===== */
+.filter-bar {
+  background: var(--white);
+  border-bottom: 1px solid var(--sand);
+  position: sticky;
+  top: 56px;
+  z-index: 50;
+}
+.filter-bar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filter-bar-inner::-webkit-scrollbar { display: none; }
+.filter-label { font-family: var(--oswald); font-size: 0.72rem; letter-spacing: 0.15em; color: var(--text-lt); white-space: nowrap; flex-shrink: 0; padding-right: 0.5rem; border-right: 1px solid var(--sand); }
+.filter-btn { background: none; border: 1px solid var(--sand); color: var(--text-lt); padding: 0.45rem 1.1rem; font-size: 0.82rem; font-family: var(--noto); border-radius: 99px; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background 0.25s, color 0.25s, border-color 0.25s; }
+.filter-btn.active, .filter-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+
+/* ===== MAIN ===== */
+.hotel-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 2rem 6rem;
+}
+
+.results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+.results-count { font-family: var(--oswald); font-size: 0.8rem; letter-spacing: 0.1em; color: var(--text-lt); }
+.results-count strong { color: var(--navy); font-size: 1.1rem; }
+
+/* ===== HOTEL CARD ===== */
+.hotel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.hotel-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr;
+  opacity: 0;
+  transform: translateY(1.5rem);
+  transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
+}
+.hotel-card.visible { opacity: 1; transform: translateY(0); }
+.hotel-card.hidden { display: none; }
+
+.hotel-img-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.hotel-img-wrap img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  transition: transform 0.5s var(--ease);
+}
+.hotel-card:hover .hotel-img-wrap img { transform: scale(1.03); }
+
+.hotel-type-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  font-family: var(--oswald);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  padding: 0.25rem 0.7rem;
+  border-radius: var(--radius);
+  color: var(--white);
+}
+.badge-hotel   { background: var(--navy); }
+.badge-ryokan  { background: var(--rust); }
+.badge-pension { background: var(--green); }
+.badge-camp    { background: #5a7a3a; }
+
+.hotel-tag-seasonal {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(184,92,56,0.9);
+  color: var(--white);
+  font-size: 0.68rem;
+  font-family: var(--noto);
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+}
+
+.hotel-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.hotel-name {
+  font-family: var(--noto);
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--navy);
+}
+
+.hotel-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.hotel-meta-item {
+  font-size: 0.75rem;
+  color: var(--text-lt);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.hotel-meta-divider {
+  width: 1px;
+  height: 0.75rem;
+  background: var(--sand);
+}
+
+.hotel-desc {
+  font-size: 0.85rem;
+  color: var(--text-lt);
+  line-height: 1.8;
+}
+
+.hotel-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+.feature-tag {
+  font-size: 0.72rem;
+  border: 1px solid var(--sand);
+  color: var(--text-lt);
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+}
+
+.hotel-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--cream);
+  gap: 1rem;
+}
+
+.hotel-price-label {
+  font-size: 0.7rem;
+  color: var(--text-lt);
+  margin-bottom: 0.2rem;
+}
+.hotel-price {
+  font-family: var(--oswald);
+  font-size: 1.3rem;
+  color: var(--navy);
+}
+.hotel-price span {
+  font-size: 0.72rem;
+  font-family: var(--noto);
+  color: var(--text-lt);
+  margin-left: 0.2rem;
+}
+
+.btn-reserve {
+  display: inline-block;
+  background: var(--navy);
+  color: var(--white);
+  padding: 0.75rem 1.5rem;
+  font-family: var(--noto);
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: var(--radius);
+  transition: background 0.25s, transform 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-reserve:hover { background: var(--green); transform: translateY(-1px); }
+
+/* ===== BOOKING GUIDE ===== */
+.booking-guide {
+  background: var(--navy-mid);
+  border-radius: var(--radius);
+  padding: 2rem;
+  margin-top: 3rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+.booking-guide-title {
+  font-family: var(--oswald);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--green-lt);
+  margin-bottom: 0.75rem;
+}
+.booking-guide h3 {
+  font-family: var(--oswald);
+  font-size: 1.2rem;
+  color: var(--white);
+  font-weight: 400;
+  margin-bottom: 0.75rem;
+}
+.booking-guide p {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.8;
+}
+.booking-guide-steps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  counter-reset: step;
+}
+.booking-guide-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.6;
+  counter-increment: step;
+}
+.booking-guide-steps li::before {
+  content: counter(step);
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--green);
+  color: var(--white);
+  font-family: var(--oswald);
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-top: 0.1rem;
+}
+
+/* ===== CONTACT CTA ===== */
+.hotel-cta {
+  background: var(--cream);
+  border: 1px solid var(--sand);
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+.hotel-cta p { font-size: 0.85rem; color: var(--text-lt); margin-bottom: 1rem; line-height: 1.7; }
+.btn-contact {
+  display: inline-block;
+  border: 1.5px solid var(--navy);
+  color: var(--navy);
+  padding: 0.75rem 1.75rem;
+  font-family: var(--oswald);
+  font-size: 0.88rem;
+  letter-spacing: 0.1em;
+  border-radius: var(--radius);
+  transition: background 0.25s, color 0.25s;
+}
+.btn-contact:hover { background: var(--navy); color: var(--white); }
+
+/* ===== FOOTER ===== */
+.footer { background: var(--navy); padding: 3rem 2rem 2rem; }
+.footer-inner { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+.footer-logo { font-family: var(--oswald); font-size: 1.5rem; font-weight: 600; color: var(--white); letter-spacing: 0.15em; }
+.footer-nav, .footer-sns { display: flex; flex-wrap: wrap; gap: 1rem; }
+.footer-nav a, .footer-sns a { color: rgba(255,255,255,0.6); font-size: 0.82rem; transition: color 0.3s; }
+.footer-nav a:hover, .footer-sns a:hover { color: var(--green-lt); }
+.footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.3); border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.5rem; }
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 640px) {
+  .hotel-card { grid-template-columns: 280px 1fr; }
+  .hotel-img-wrap img { width: 280px; height: 100%; max-height: 300px; }
+  .booking-guide { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 900px) {
+  .hotel-card { grid-template-columns: 340px 1fr; }
+  .hotel-img-wrap img { width: 340px; height: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hotel-card { opacity: 1; transform: none; transition: none; }
+}
+  </style>
+</head>
+<body>
+     <div id="loading">
+    <div class="loading-inner">
+      <span class="loading-jp">増毛町</span>
+      <span class="loading-en">MASHIKE</span>
+      <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="index.html" class="nav-logo">MASHIKE</a>
+    <button id="menu-open" class="btn-hamburger" aria-label="メニューを開く">
+      <span></span><span></span><span></span>
+    </button>
+    <div id="menu-overlay"></div>
+    <div id="menu-panel">
+      <button id="menu-close" aria-label="メニューを閉じる">✕</button>
+      <ul class="menu-list">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="https://mashike.jp/kankou/">About</a></li>
+        <li><a href="https://www.instagram.com/mashike_official/">Instagram</a></li>
+        <li><a href="hotel.html">宿泊予約</a></li>
+        <li><a href="ec.html">オンラインショップ</a></li>
+        <li><a href="https://furusato-mashike.jp/">ふるさと納税</a></li>
+        <li><a href="#contact">お問い合わせ</a></li>
+      </ul>
+      <div class="menu-line-btn">
+        <a href="#" class="btn-line">LINE で最新情報を受け取る</a>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- PAGE HERO -->
+   <section class="hero" id="home">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">hotel</p>
+      <h1 class="hero-title">宿泊施設</h1>
+      <p class="hero-sub">MASHIKE TOWN</p>
+      <p class="hero-desc">お好みの宿を提供します</p>
+    </div>
+    <div class="hero-scroll">
+      <span>SCROLL</span>
+      <div class="hero-scroll-line"></div>
+    </div>
+  </section>
+
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="filter-bar-inner">
+      <span class="filter-label">STYLE</span>
+      <button class="filter-btn active" data-cat="all">すべて</button>
+      <button class="filter-btn" data-cat="hotel">ホテル</button>
+      <button class="filter-btn" data-cat="ryokan">民宿</button>
+      <button class="filter-btn" data-cat="pension">コテージ</button>
+      <button class="filter-btn" data-cat="camp">キャンプ</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="hotel-main">
+    <div class="results-bar">
+      <p class="results-count">全 <strong id="count">6</strong> 施設</p>
+    </div>
+
+    <div class="hotel-list" id="hotel-list">
+
+      <!-- 施設1 -->
+      <article class="hotel-card" data-cat="hotel">
+        <div class="hotel-img-wrap">
+          <img src="images/IMG_5592.JPG" alt="施設名">
+          <span class="hotel-type-badge badge-hotel">ホテル</span>
+        </div>
+        <div class="hotel-body">
+          <h2 class="hotel-name">オーベルジュ増毛</h2>
+          <div class="hotel-meta">
+            <span class="hotel-meta-item">📍 増毛町港町</span>
+            <span class="hotel-meta-divider"></span>
+            <span class="hotel-meta-item">全〇室</span>
+            <span class="hotel-meta-divider"></span>
+            <span class="hotel-meta-item">日本海ビュー</span>
+          </div>
+          <p class="hotel-desc">日本海を一望できる客室からの眺めが自慢。新鮮な海の幸を使った夕食と、地酒の取り揃えが充実。チェックアウト後も増毛観光をゆっくり楽しめます。</p>
+          <div class="hotel-features">
+            <span class="feature-tag">温泉</span>
+            <span class="feature-tag">夕食付き</span>
+            <span class="feature-tag">駐車場無料</span>
+            <span class="feature-tag">Wi-Fi完備</span>
+          </div>
+          <div class="hotel-footer">
+            <div class="hotel-price-wrap">
+              <p class="hotel-price-label">1泊2食・おひとり様</p>
+              <p class="hotel-price">¥〇,〇〇〇<span>〜（税込）</span></p>
+            </div>
+            <a href="https://www.jhpds.net/aubergemashike/uw/uwp3100/uww3101.do?yadNo=338400" class="btn-reserve">予約する</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 施設2 -->
+      <article class="hotel-card" data-cat="ryokan">
+        <div class="hotel-img-wrap">
+          <img src="images/IMG_5593.JPG" alt="施設名">
+          <span class="hotel-type-badge badge-ryokan">民宿</span>
+          <span class="hotel-tag-seasonal">旬：うに料理</span>
+        </div>
+        <div class="hotel-body">
+          <h2 class="hotel-name">民宿たけうち
+          </h2>
+          <div class="hotel-meta">
+            <span class="hotel-meta-item">📍 増毛町弁天町</span>
+            <span class="hotel-meta-divider"></span>
+            <span class="hotel-meta-item">全〇室</span>
+            <span class="hotel-meta-divider"></span>
+            <span class="hotel-meta-item">和室</span>
+          </div>
+          <p class="hotel-desc">創業〇〇年の老舗旅館。季節の海の幸を活かした会席料理と、ゆったりした和の空間で非日常を体験。旬のうに・えびをふんだんに使った夕食が大変人気。</p>
+          <div class="hotel-features">
+            <span class="feature-tag">大浴場</span>
+            <span class="feature-tag">会席料理</span>
+            <span class="feature-tag">海鮮プラン</span>
+            <span class="feature-tag">駐車場無料</span>
+          </div>
+          <div class="hotel-footer">
+            <div class="hotel-price-wrap">
+              <p class="hotel-price-label">1泊2食・おひとり様</p>
+              <p class="hotel-price">¥〇,〇〇〇<span>〜（税込）</span></p>
+            </div>
+            <a href="https://mashike.jp/kankou/minshuku/%e6%b0%91%e5%ae%bf%e3%81%9f%e3%81%91%e3%81%86%e3%81%a1/" class="btn-reserve">
+              予約する</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 施設3 -->
+      <article class="hotel-card" data-cat="ryokan">
+        <div class="hotel-img-wrap">
+          <img src="images/noimage-760x460.png" alt="施設名">
+          <span class="hotel-type-badge badge-ryokan">民宿</span>
+        </div>
+        <div class="hotel-body">
+          <h2 class="hotel-name">（施設名）</h2>
+          <div class="hotel-meta">
+            <span class="hotel-meta-item">📍 増毛町栄町</span>
+            <span class="hotel-meta-divider"></span>
+            <span class="hotel-meta-item">全〇室</span>
+            <span class="hotel-meta-divider"></span>
+            <span class="hotel-meta-item">和洋室</span>
+          </div>
+          <p class="hotel-desc">国稀酒造まで徒歩〇分の好立地。地酒と郷土料理のペアリングが楽しめる「酒まつり宿泊プラン」が毎年秋に好評。蔵見学との組み合わせがおすすめ。</p>
+          <div class="hotel-features">
+            <span class="feature-tag">地酒プラン</span>
+            <span class="feature-tag">送迎あり</span>
+            <span class="feature-tag">家族向け</span>
+          </div>
+          <div class="hotel-footer">
+            <div class="hotel-price-wrap">
+              <p class="hotel-price-label">1泊2食・おひとり様</p>
+              <p class="hotel-price">¥〇,〇〇〇<span>〜（税込）</span></p>
+            </div>
+            <a href="#" class="btn-reserve">予約する</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 施設4 -->
+      <article class="hotel-card" data-cat="pension">
+        <div class="hotel-img-wrap">
+          <img src="images/IMG_5594.JPG" alt="施設名">
+          <span class="hotel-type-badge badge-pension">コテージ</span>
+        </div>
+        <div class="hotel-body">
+          <h2 class="hotel-name">コテージ　ミンズ</h2>
+          <div class="hotel-meta">
+            <span class="hotel-meta-item">📍 増毛町別苅</span>
+            <span class="hotel-meta-divider"></span>
+            <span class="hotel-meta-item">全〇室</span>
+            <span class="hotel-meta-divider"></span>
+            <span class="hotel-meta-item">果樹園隣接</span>
+          </div>
+          <p class="hotel-desc">自然と共にBBQを楽しむ</p>
+          <div class="hotel-features">
+            <span class="feature-tag">朝食付き</span>
+            <span class="feature-tag">果物狩り手配</span>
+            <span class="feature-tag">ペット相談可</span>
+          </div>
+          <div class="hotel-footer">
+            <div class="hotel-price-wrap">
+              <p class="hotel-price-label">1泊朝食付き・おひとり様</p>
+              <p class="hotel-price">¥〇,〇〇〇<span>〜（税込）</span></p>
+            </div>
+            <a href="https://mashike.jp/kankou/other_lodging/1512/" class="btn-reserve">予約する</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 施設5 -->
+      <article class="hotel-card" data-cat="pension">
+        <div class="hotel-img-wrap">
+          <img src="images/noimage-760x460.png" alt="施設名">
+          <span class="hotel-type-badge badge-pension">コテージ</span>
+        </div>
+        <div class="hotel-body">
+          <h2 class="hotel-name">（施設名）</h2>
+          <div class="hotel-meta">
+            <span class="hotel-meta-item">📍 増毛町暑寒沢</span>
+            <span class="hotel-meta-divider"></span>
+            <span class="hotel-meta-item">全〇室</span>
+            <span class="hotel-meta-divider"></span>
+            <span class="hotel-meta-item">山ビュー</span>
+          </div>
+          <p class="hotel-desc">暑寒別岳登山の拠点として人気。登山ガイドの紹介や、下山後の温かい食事でアウトドア派の旅人をサポート。秋の紅葉シーズンは特に予約が早い。</p>
+          <div class="hotel-features">
+            <span class="feature-tag">登山拠点</span>
+            <span class="feature-tag">ガイド紹介</span>
+            <span class="feature-tag">コインランドリー</span>
+          </div>
+          <div class="hotel-footer">
+            <div class="hotel-price-wrap">
+              <p class="hotel-price-label">1泊2食・おひとり様</p>
+              <p class="hotel-price">¥〇,〇〇〇<span>〜（税込）</span></p>
+            </div>
+            <a href="#" class="btn-reserve">予約する</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 施設6 -->
+      <article class="hotel-card" data-cat="camp">
+        <div class="hotel-img-wrap">
+          <img src="images/noimage-760x460.png" alt="施設名">
+          <span class="hotel-type-badge badge-camp">キャンプ</span>
+        </div>
+        <div class="hotel-body">
+          <h2 class="hotel-name">（施設名）</h2>
+          <div class="hotel-meta">
+            <span class="hotel-meta-item">📍 増毛町</span>
+            <span class="hotel-meta-divider"></span>
+            <span class="hotel-meta-item">サイト〇区画</span>
+            <span class="hotel-meta-divider"></span>
+            <span class="hotel-meta-item">国定公園内</span>
+          </div>
+          <p class="hotel-desc">星空が美しく、夏の夜は天の川も観測できる。バーベキュー設備完備。近隣の直売所で地元野菜や海鮮も調達可能。</p>
+          <div class="hotel-features">
+            <span class="feature-tag">BBQ可</span>
+            <span class="feature-tag">炊事場あり</span>
+            <span class="feature-tag">星空観測</span>
+            <span class="feature-tag">6〜9月営業</span>
+          </div>
+          <div class="hotel-footer">
+            <div class="hotel-price-wrap">
+              <p class="hotel-price-label">1区画（1泊）</p>
+              <p class="hotel-price">¥〇,〇〇〇<span>〜（税込）</span></p>
+            </div>
+            <a href="#" class="btn-reserve">予約する</a>
+          </div>
+        </div>
+      </article>
+
+    </div><!-- /hotel-list -->
+
+    <!-- 予約ガイド -->
+    <div class="booking-guide">
+      <div>
+        <p class="booking-guide-title">HOW TO BOOK</p>
+        <h3>予約の流れ</h3>
+        <ol class="booking-guide-steps">
+          <li>施設の「予約する」ボタンから希望の宿を選択</li>
+          <li>日程・人数・プランを選んで予約フォームへ</li>
+          <li>確認メールが届いたら予約完了</li>
+          <li>当日はチェックイン時間に合わせてお越しください</li>
+        </ol>
+      </div>
+      <div>
+        <p class="booking-guide-title">CONTACT</p>
+        <h3>お問い合わせ</h3>
+        <p>ご不明な点は増毛町観光協会までお気軽にどうぞ。<br>団体予約・特別プランのご相談も承ります。</p>
+        <br>
+        <p style="color:var(--green-lt); font-family:var(--oswald); letter-spacing:0.05em;">📞 &nbsp;000-0000-0000</p>
+      </div>
+    </div>
+
+    <!-- 施設掲載希望CTA -->
+    
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">MASHIKE</div>
+      <nav class="footer-nav">
+        <a href="hotel.html">宿泊予約</a>
+        <a href="ec.html">オンラインショップ</a>
+        <a href="https://furusato-mashike.jp/">ふるさと納税</a>
+        <a href="">SNS</a>
+        <a href="#contact">お問い合わせ</a>
+      </nav>
+      <div class="footer-sns">
+        <a href="https://www.instagram.com/mashike_official/" target="_blank" rel="noopener">Instagram</a>
+        <a href="#" target="_blank" rel="noopener">TikTok</a>
+        <a href="https://www.youtube.com/@mashike_official" target="_blank" rel="noopener">YouTube</a>
+        <a href="#" target="_blank" rel="noopener">LINE</a>
+      </div>
+      <p class="footer-copy">© 2026 増毛町観光協会</p>
+    </div>
+  </footer>
+
+
+  <script>
+    window.addEventListener('load', () => {
+  setTimeout(() => { document.getElementById('loading').classList.add('hidden'); }, 1800);
+});
+
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); }, { passive: true });
+
+// NAV MENU
+const menuOpen    = document.getElementById('menu-open');
+const menuClose   = document.getElementById('menu-close');
+const menuPanel   = document.getElementById('menu-panel');
+const menuOverlay = document.getElementById('menu-overlay');
+function openMenu()  { menuPanel.classList.add('open'); menuOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeMenu() { menuPanel.classList.remove('open'); menuOverlay.classList.remove('active'); document.body.style.overflow = ''; }
+menuOpen.addEventListener('click', openMenu);
+menuClose.addEventListener('click', closeMenu);
+menuOverlay.addEventListener('click', closeMenu);
+document.querySelectorAll('.menu-list a').forEach(l => l.addEventListener('click', closeMenu));
+
+// CARD REVEAL
+const cards = document.querySelectorAll('.hotel-card');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      obs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08 });
+cards.forEach(c => obs.observe(c));
+
+// FILTER
+const filterBtns = document.querySelectorAll('.filter-btn');
+const hotelCards = document.querySelectorAll('.hotel-card');
+const countEl    = document.getElementById('count');
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cat = btn.dataset.cat;
+    let visible = 0;
+    hotelCards.forEach(card => {
+      if (cat === 'all' || card.dataset.cat === cat) {
+        card.classList.remove('hidden');
+        visible++;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    countEl.textContent = visible;
+  });
+});
+  </script>
+</body>
+</html>

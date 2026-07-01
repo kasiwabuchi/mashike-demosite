@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>店舗一覧 | 増毛町</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --navy:     #1a2e3b;
+  --navy-mid: #243545;
+  --cream:    #f5f0e8;
+  --white:    #ffffff;
+  --green:    #4a8c7a;
+  --green-lt: #a8c8b8;
+  --rust:     #b85c38;
+  --sand:     #d4c5a9;
+  --text:     #2c2c2c;
+  --text-lt:  #6b6b6b;
+  --oswald: 'Oswald', sans-serif;
+  --noto:   'Noto Sans JP', sans-serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --radius: 2px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--noto); color: var(--text); background: var(--cream); overflow-x: hidden; }
+img { max-width: 100%; height: auto; display: block; }
+a { text-decoration: none; color: inherit; }
+
+
+#loading {
+  position: fixed; inset: 0; background: var(--navy); z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.6s var(--ease), visibility 0.6s;
+}
+#loading.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.loading-inner { text-align: center; }
+.loading-jp { display: block; font-family: var(--noto); font-size: clamp(1rem, 4vw, 1.5rem); color: var(--green-lt); letter-spacing: 0.4em; margin-bottom: 0.25rem; }
+.loading-en { display: block; font-family: var(--oswald); font-size: clamp(2.5rem, 8vw, 5rem); color: var(--white); letter-spacing: 0.2em; font-weight: 300; margin-bottom: 2rem; }
+.loading-bar { width: 200px; height: 1px; background: rgba(255,255,255,0.2); margin: 0 auto; overflow: hidden; }
+.loading-bar-fill { height: 100%; background: var(--green-lt); width: 0; animation: loadbar 1.6s var(--ease) forwards; }
+@keyframes loadbar { to { width: 100%; } }
+/* ===== NAV ===== */
+#nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 2rem; transition: background 0.4s, padding 0.4s;
+}
+#nav.scrolled { background: rgba(26, 46, 59, 0.96); backdrop-filter: blur(8px); padding: 0.75rem 2rem; }
+.nav-logo { font-family: var(--oswald); font-size: 1.4rem; font-weight: 600; color: var(--white); letter-spacing: 0.15em; }
+.btn-hamburger { background: none; border: none; cursor: pointer; padding: 0.5rem; display: flex; flex-direction: column; gap: 5px; }
+.btn-hamburger span { display: block; width: 26px; height: 1.5px; background: var(--white); transition: transform 0.3s, opacity 0.3s; }
+#menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; opacity: 0; visibility: hidden; transition: opacity 0.4s, visibility 0.4s; }
+#menu-overlay.active { opacity: 1; visibility: visible; }
+#menu-panel { position: fixed; top: 0; right: 0; width: min(360px, 85vw); height: 100vh; background: var(--navy); z-index: 200; padding: 2rem; transform: translateX(100%); transition: transform 0.5s var(--ease); display: flex; flex-direction: column; gap: 2.5rem; }
+#menu-panel.open { transform: translateX(0); }
+#menu-close { align-self: flex-end; background: none; border: 1px solid rgba(255,255,255,0.3); color: var(--white); font-size: 1.1rem; width: 2.5rem; height: 2.5rem; border-radius: 50%; cursor: pointer; transition: background 0.3s; }
+#menu-close:hover { background: rgba(255,255,255,0.1); }
+.menu-list { list-style: none; }
+.menu-list li { border-bottom: 1px solid rgba(255,255,255,0.08); }
+.menu-list a { display: block; padding: 1rem 0; font-family: var(--oswald); font-size: 1.3rem; font-weight: 300; color: var(--white); letter-spacing: 0.05em; transition: color 0.3s, padding-left 0.3s; }
+.menu-list a:hover { color: var(--green-lt); padding-left: 0.5rem; }
+.btn-line { display: block; background: #06C755; color: var(--white); text-align: center; padding: 1rem; font-family: var(--noto); font-size: 0.9rem; font-weight: 500; border-radius: var(--radius); transition: opacity 0.3s; }
+.btn-line:hover { opacity: 0.85; }
+
+.section-eyebrow { font-family: var(--oswald); font-size: 0.75rem; font-weight: 400; letter-spacing: 0.25em; color: var(--green); text-transform: uppercase; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+.section-eyebrow::after { content: ''; flex: 1; max-width: 3rem; height: 1px; background: currentColor; }
+.section-title { font-family: var(--oswald); font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 600; line-height: 1.1; letter-spacing: 0.02em; color: var(--navy); }
+.btn-primary { display: inline-block; background: var(--navy); color: var(--white); padding: 0.875rem 2rem; font-family: var(--noto); font-size: 0.9rem; font-weight: 500; letter-spacing: 0.05em; border-radius: var(--radius); transition: background 0.3s, transform 0.2s; }
+.btn-primary:hover { background: var(--green); transform: translateY(-1px); }
+.btn-primary--light { background: var(--white); color: var(--navy); }
+.btn-primary--light:hover { background: var(--cream); }
+.btn-ghost { display: inline-block; border: 1px solid var(--navy); color: var(--navy); padding: 0.6rem 1.25rem; font-size: 0.85rem; font-family: var(--noto); border-radius: var(--radius); transition: background 0.3s, color 0.3s; }
+.btn-ghost:hover { background: var(--navy); color: var(--white); }
+.reveal { opacity: 0; transform: translateY(2rem); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+.hero { position: relative; height: 100svh; min-height: 600px; display: flex; align-items: flex-end; padding: 6rem 2rem 4rem; overflow: hidden; }
+.hero-bg { position: absolute; inset: 0; background: url('images/IMG_5601.JPG') center / cover no-repeat; z-index: 0; }
+.hero-content { position: relative; z-index: 2; color: var(--white); }
+.hero-eyebrow { font-family: var(--oswald); font-size: 0.8rem; letter-spacing: 0.3em; color: var(--green-lt); margin-bottom: 0.5rem; }
+.hero-title { font-family: var(--oswald); font-size: clamp(3.5rem, 12vw, 9rem); font-weight: 600; line-height: 0.9; letter-spacing: -0.01em; color: var(--white); }
+.hero-sub { font-family: var(--oswald); font-size: clamp(1rem, 3vw, 1.8rem); font-weight: 300; letter-spacing: 0.3em; color: var(--green-lt); margin-top: 0.5rem; }
+.hero-desc { font-size: 0.95rem; color: rgba(255,255,255,0.8); margin-top: 1.25rem; line-height: 1.8; }
+.hero-scroll { position: absolute; right: 2rem; bottom: 3rem; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 0.75rem; color: rgba(255,255,255,0.6); }
+.hero-scroll span { font-family: var(--oswald); font-size: 0.65rem; letter-spacing: 0.2em; writing-mode: vertical-rl; }
+.hero-scroll-line { width: 1px; height: 3rem; background: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent); animation: scrollline 2s ease-in-out infinite; }
+@keyframes scrollline { 0%, 100% { transform: scaleY(1); opacity: 1; } 50% { transform: scaleY(0.5); opacity: 0.5; } }
+
+/* ===== PAGE HERO（共通） ===== */
+.page-hero2 {
+  padding-top: 56px;
+  background: var(--navy);
+  position: relative;
+  overflow: hidden;
+}
+.page-hero-inner2 {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 2rem 3rem;
+  position: relative;
+  z-index: 1;
+}
+.breadcrumb2 { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; font-family: var(--oswald); font-size: 0.72rem; letter-spacing: 0.12em; color: rgba(255,255,255,0.45); }
+.breadcrumb2 a { color: var(--green-lt); transition: color 0.3s; }
+.breadcrumb2 a:hover { color: var(--white); }
+.breadcrumb2 span { color: rgba(255,255,255,0.25); }
+.page-hero-en2 { font-family: var(--oswald); font-size: 0.75rem; letter-spacing: 0.3em; color: var(--green-lt); margin-bottom: 0.5rem; }
+.page-hero-title2 { font-family: var(--oswald); font-size: clamp(2.5rem, 7vw, 4rem); font-weight: 600; color: var(--white); line-height: 1; letter-spacing: 0.02em; margin-bottom: 1rem; }
+.page-hero-desc2 { font-size: 0.9rem; color: rgba(255,255,255,0.65); line-height: 1.8; max-width: 480px; }
+.page-hero-wave2 { display: block; width: 100%; line-height: 0; }
+.page-hero-wave2 svg { display: block; width: 100%; }
+
+/* ===== FILTER BAR ===== */
+.filter-bar {
+  background: var(--white);
+  border-bottom: 1px solid var(--sand);
+  position: sticky;
+  top: 56px;
+  z-index: 50;
+}
+.filter-bar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filter-bar-inner::-webkit-scrollbar { display: none; }
+.filter-label { font-family: var(--oswald); font-size: 0.72rem; letter-spacing: 0.15em; color: var(--text-lt); white-space: nowrap; flex-shrink: 0; padding-right: 0.5rem; border-right: 1px solid var(--sand); }
+.filter-btn { background: none; border: 1px solid var(--sand); color: var(--text-lt); padding: 0.45rem 1.1rem; font-size: 0.82rem; font-family: var(--noto); border-radius: 99px; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background 0.25s, color 0.25s, border-color 0.25s; }
+.filter-btn.active, .filter-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+
+/* ===== MAIN ===== */
+.shop-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 2rem 6rem;
+}
+.results-bar { display: flex; align-items: center; margin-bottom: 2rem; }
+.results-count { font-family: var(--oswald); font-size: 0.8rem; letter-spacing: 0.1em; color: var(--text-lt); }
+.results-count strong { color: var(--navy); font-size: 1.1rem; }
+
+/* ===== CATEGORY HEADING ===== */
+.category-section { margin-bottom: 3.5rem; }
+.category-section.hidden { display: none; }
+.category-heading { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--sand); }
+.category-heading-en { font-family: var(--oswald); font-size: 1.4rem; font-weight: 400; color: var(--navy); letter-spacing: 0.08em; }
+.category-heading-jp { font-size: 0.8rem; color: var(--text-lt); }
+.category-heading-line { flex: 1; height: 1px; background: var(--sand); }
+
+/* ===== SHOP CARD（店舗一覧） ===== */
+.shop-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.shop-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  opacity: 0;
+  transform: translateY(1.2rem);
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+}
+.shop-card.visible { opacity: 1; transform: translateY(0); }
+.shop-card.hidden { display: none; }
+
+.shop-img-wrap { position: relative; overflow: hidden; flex-shrink: 0; }
+.shop-img-wrap img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  transition: transform 0.5s var(--ease);
+}
+.shop-card:hover .shop-img-wrap img { transform: scale(1.05); }
+
+.shop-type-badge {
+  position: absolute;
+  top: 0.5rem; left: 0.5rem;
+  font-family: var(--oswald);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius);
+  color: var(--white);
+}
+.badge-seafood { background: #1d6fa0; }
+.badge-fruit   { background: #7a5c2e; }
+.badge-others  { background: var(--green); }
+
+.shop-body {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.shop-name { font-size: 1rem; font-weight: 500; color: var(--navy); line-height: 1.3; }
+.shop-genre { font-size: 0.72rem; color: var(--text-lt); }
+.shop-desc { font-size: 0.8rem; color: var(--text-lt); line-height: 1.7; flex: 1; margin-top: 0.1rem; }
+.shop-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--cream);
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.shop-info { font-size: 0.72rem; color: var(--text-lt); }
+.btn-shop {
+  display: inline-block;
+  border: 1px solid var(--navy);
+  color: var(--navy);
+  font-size: 0.75rem;
+  font-family: var(--noto);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius);
+  transition: background 0.25s, color 0.25s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-shop:hover { background: var(--navy); color: var(--white); }
+
+/* ===== LINE CTA（背景なし） ===== */
+.line-cta-flat {
+  padding: 3rem 0 0;
+  border-top: 1px solid var(--sand);
+  margin-top: 1rem;
+}
+.line-cta-flat-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.line-cta-flat p {
+  font-family: var(--oswald);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--green);
+  margin-bottom: 0.4rem;
+}
+.line-cta-flat h3 {
+  font-family: var(--oswald);
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--navy);
+  margin-bottom: 0.5rem;
+}
+.line-cta-flat-desc {
+  font-size: 0.82rem;
+  color: var(--text-lt);
+  line-height: 1.8;
+}
+.btn-line-flat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #06C755;
+  color: var(--white);
+  padding: 0.75rem 1.5rem;
+  font-size: 0.88rem;
+  font-family: var(--noto);
+  font-weight: 500;
+  border-radius: var(--radius);
+  transition: opacity 0.3s;
+  align-self: flex-start;
+}
+.btn-line-flat:hover { opacity: 0.85; }
+
+/* ===== FOOTER ===== */
+.footer { background: var(--navy); padding: 3rem 2rem 2rem; }
+.footer-inner { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+.footer-logo { font-family: var(--oswald); font-size: 1.5rem; font-weight: 600; color: var(--white); letter-spacing: 0.15em; }
+.footer-nav, .footer-sns { display: flex; flex-wrap: wrap; gap: 1rem; }
+.footer-nav a, .footer-sns a { color: rgba(255,255,255,0.6); font-size: 0.82rem; transition: color 0.3s; }
+.footer-nav a:hover, .footer-sns a:hover { color: var(--green-lt); }
+.footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.3); border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.5rem; }
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 640px) {
+  .shop-grid { grid-template-columns: repeat(2, 1fr); }
+  .shop-card { grid-template-columns: 1fr; }
+  .shop-img-wrap img { width: 100%; height: 160px; }
+  .line-cta-flat-inner { flex-direction: row; align-items: flex-start; gap: 3rem; }
+  .line-cta-flat-inner > div:first-child { flex: 1; }
+}
+@media (min-width: 900px) {
+  .shop-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shop-card { opacity: 1; transform: none; transition: none; }
+}
+  </style>
+</head>
+<body>
+     <div id="loading">
+    <div class="loading-inner">
+      <span class="loading-jp">増毛町</span>
+      <span class="loading-en">MASHIKE</span>
+      <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+ <nav id="nav">
+    <a href="index.html" class="nav-logo">MASHIKE</a>
+    <button id="menu-open" class="btn-hamburger" aria-label="メニューを開く">
+      <span></span><span></span><span></span>
+    </button>
+    <div id="menu-overlay"></div>
+    <div id="menu-panel">
+      <button id="menu-close" aria-label="メニューを閉じる">✕</button>
+      <ul class="menu-list">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="https://mashike.jp/kankou/">About</a></li>
+        <li><a href="https://www.instagram.com/mashike_official/">Instagram</a></li>
+        <li><a href="hotel.html">宿泊予約</a></li>
+        <li><a href="ec.html">オンラインショップ</a></li>
+        <li><a href="https://furusato-mashike.jp/">ふるさと納税</a></li>
+        <li><a href="#contact">お問い合わせ</a></li>
+      </ul>
+      <div class="menu-line-btn">
+        <a href="#" class="btn-line">LINE で最新情報を受け取る</a>
+      </div>
+    </div>
+  </nav>
+  <section class="hero" id="home">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">online shop</p>
+      <h1 class="hero-title">オンラインショップ</h1>
+      <p class="hero-sub">MASHIKE TOWN</p>
+      <p class="hero-desc">海の幸・山の幸・地酒。増毛町の生産者・店舗から直接お届けします。</p>
+    </div>
+    <div class="hero-scroll">
+      <span>SCROLL</span>
+      <div class="hero-scroll-line"></div>
+    </div>
+  </section>
+
+ 
+   
+
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="filter-bar-inner">
+      <span class="filter-label">CATEGORY</span>
+      <button class="filter-btn active" data-cat="all">すべて</button>
+      <button class="filter-btn" data-cat="seafood">海鮮</button>
+      <button class="filter-btn" data-cat="fruit">果物</button>
+      <button class="filter-btn" data-cat="others">その他</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="shop-main">
+    <div class="results-bar">
+      <p class="results-count">全 <strong id="count">9</strong> 店舗</p>
+    </div>
+
+    <!-- 海鮮 -->
+    <div class="category-section" id="sec-seafood">
+      <div class="category-heading">
+        <span class="category-heading-en">SEAFOOD</span>
+        <span class="category-heading-jp">海鮮</span>
+        <span class="category-heading-line"></span>
+      </div>
+      <div class="shop-grid">
+
+        <div class="shop-card" data-cat="seafood">
+          <div class="shop-img-wrap">
+            <img src="images/katosuisan.png" alt="店舗">
+            <span class="shop-type-badge badge-seafood">海鮮</span>
+          </div>
+          <div class="shop-body">
+            <h3 class="shop-name">加藤水産</h3>
+            <p class="shop-genre">海産物直売 / 通販</p>
+            <p class="shop-desc">増毛漁港で水揚げされた新鮮な海産物を直売。うに・えび・たこを中心に全国発送対応。</p>
+            <div class="shop-footer">
+              <span class="shop-info">📍 増毛町港町〇〇番地</span>
+              <a href="https://shop-katosuisan.shop-pro.jp/?mode=f1" class="btn-shop">ショップへ →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="shop-card" data-cat="seafood">
+          <div class="shop-img-wrap">
+            <img src="images/ぶり.JPG" alt="店舗">
+            <span class="shop-type-badge badge-seafood">海鮮</span>
+          </div>
+          <div class="shop-body">
+            <h3 class="shop-name">（店舗名）</h3>
+            <p class="shop-genre">鮮魚 / 加工品</p>
+            <p class="shop-desc">にしんの糠漬けや干物など、増毛の伝統的な加工品を製造販売。ギフトセット対応。</p>
+            <div class="shop-footer">
+              <span class="shop-info">📍 増毛町〇〇番地</span>
+              <a href="https://mashike-ec.myshopify.com/" class="btn-shop">ショップへ →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="shop-card" data-cat="seafood">
+          <div class="shop-img-wrap">
+            <img src="images/鮭.JPG" alt="店舗">
+            <span class="shop-type-badge badge-seafood">海鮮</span>
+          </div>
+          <div class="shop-body">
+            <h3 class="shop-name">（店舗名）</h3>
+            <p class="shop-genre">食堂 / 海鮮丼</p>
+            <p class="shop-desc">水揚げ当日の魚介を使った海鮮丼が看板メニュー。テイクアウト・お土産の冷凍品も充実。</p>
+            <div class="shop-footer">
+              <span class="shop-info">📍 増毛町栄町〇〇番地</span>
+              <a href="https://mashike-ec.myshopify.com/" class="btn-shop">ショップへ →</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 果物 -->
+    <div class="category-section" id="sec-fruit">
+      <div class="category-heading">
+        <span class="category-heading-en">FRUIT</span>
+        <span class="category-heading-jp">果物</span>
+        <span class="category-heading-line"></span>
+      </div>
+      <div class="shop-grid">
+
+        <div class="shop-card" data-cat="fruit">
+          <div class="shop-img-wrap">
+            <img src="images/noimage-760x460.png" alt="店舗">
+            <span class="shop-type-badge badge-fruit">果物</span>
+          </div>
+          <div class="shop-body">
+            <h3 class="shop-name">（農園名）</h3>
+            <p class="shop-genre">りんご / もも / 直売</p>
+            <p class="shop-desc">暑寒別山麓で育てた蜜入りりんごともも。収穫期の摘み取り体験も受付中。全国発送。</p>
+            <div class="shop-footer">
+              <span class="shop-info">📍 増毛町〇〇番地</span>
+              <a href="https://mashike-ec.myshopify.com/" class="btn-shop">ショップへ →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="shop-card" data-cat="fruit">
+          <div class="shop-img-wrap">
+            <img src="images/noimage-760x460.png" alt="店舗">
+            <span class="shop-type-badge badge-fruit">果物</span>
+          </div>
+          <div class="shop-body">
+            <h3 class="shop-name">（農園名）</h3>
+            <p class="shop-genre">ぶどう / ジャム / 加工品</p>
+            <p class="shop-desc">ナイアガラ・デラウェアを中心に栽培。自家製ぶどうジャム・ジュースも好評。</p>
+            <div class="shop-footer">
+              <span class="shop-info">📍 増毛町〇〇〇番地</span>
+              <a href="https://mashike-ec.myshopify.com/" class="btn-shop">ショップへ →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="shop-card" data-cat="fruit">
+          <div class="shop-img-wrap">
+            <img src="images/ogawakajuen.webp" alt="店舗">
+            <span class="shop-type-badge badge-fruit">果物</span>
+          </div>
+          <div class="shop-body">
+            <h3 class="shop-name">小河果樹園</h3>
+            <p class="shop-genre">果物全般 / 直売所</p>
+            <p class="shop-desc">増毛産フルーツを一か所で購入できる直売所。りんご・もも・ぶどうを季節ごとに販売。</p>
+            <div class="shop-footer">
+              <span class="shop-info">📍 増毛町〇〇〇番地</span>
+              <a href="https://www.tabechoku.com/products" class="btn-shop">ショップへ →</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- その他 -->
+    <div class="category-section" id="sec-others">
+      <div class="category-heading">
+        <span class="category-heading-en">OTHERS</span>
+        <span class="category-heading-jp">その他・地酒・加工品</span>
+        <span class="category-heading-line"></span>
+      </div>
+      <div class="shop-grid">
+
+        <div class="shop-card" data-cat="others">
+          <div class="shop-img-wrap">
+            <img src="images/IMG_5531.jpeg" alt="国稀酒造">
+            <span class="shop-type-badge badge-others">地酒</span>
+          </div>
+          <div class="shop-body">
+            <h3 class="shop-name">國稀酒造</h3>
+            <p class="shop-genre">日本酒 / 蔵見学</p>
+            <p class="shop-desc">道内最北の酒蔵。創業明治15年。純米酒・特別純米酒など多彩なラインナップを蔵元直販。蔵見学も受付中。</p>
+            <div class="shop-footer">
+              <span class="shop-info">📍 増毛町稲葉町〇〇番地</span>
+              <a href="https://www.kunimare.co.jp/online_shop/products/list" class="btn-shop">ショップへ →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="shop-card" data-cat="others">
+          <div class="shop-img-wrap">
+            <img src="images/noimage-760x460.png" alt="店舗">
+            <span class="shop-type-badge badge-others">加工品</span>
+          </div>
+          <div class="shop-body">
+            <h3 class="shop-name">（店舗名）</h3>
+            <p class="shop-genre">昆布 / 乾物 / 加工品</p>
+            <p class="shop-desc">増毛産真昆布・ワカメなど海藻類の加工品専門店。だし用昆布のギフトセットが人気。</p>
+            <div class="shop-footer">
+              <span class="shop-info">📍 増毛町〇〇〇番地</span>
+              <a href="https://mashike-ec.myshopify.com/" class="btn-shop">ショップへ →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="shop-card" data-cat="others">
+          <div class="shop-img-wrap">
+            <img src="images/noimage-760x460.png" alt="店舗">
+            <span class="shop-type-badge badge-others">土産</span>
+          </div>
+          <div class="shop-body">
+            <h3 class="shop-name">（店舗名）</h3>
+            <p class="shop-genre">お土産 / 増毛セット</p>
+            <p class="shop-desc">うに・えび・りんご・地酒を詰め合わせた増毛おまかせセット。贈り物・ふるさと納税に対応。</p>
+            <div class="shop-footer">
+              <span class="shop-info">📍 増毛町〇〇〇番地</span>
+              <a href="https://mashike-ec.myshopify.com/" class="btn-shop">ショップへ →</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- LINE CTA（背景なし・フラット） -->
+    <div class="line-cta-flat">
+      <div class="line-cta-flat-inner">
+        <div>
+          <p>SEASONAL INFORMATION</p>
+          <h3>旬の入荷情報は LINE でお届け</h3>
+          <p class="line-cta-flat-desc">ウニ漁解禁・りんご収穫・新酒入荷など、増毛町の旬の情報をLINEでいち早くお届けします。登録無料、いつでも退会できます。</p>
+        </div>
+        <div>
+          <a href="#" class="btn-line-flat">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+            友だち追加（無料）
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+ <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">MASHIKE</div>
+      <nav class="footer-nav">
+        <a href="hotel.html">宿泊予約</a>
+        <a href="ec.html">オンラインショップ</a>
+        <a href="https://furusato-mashike.jp/">ふるさと納税</a>
+        <a href="">SNS</a>
+        <a href="#contact">お問い合わせ</a>
+      </nav>
+      <div class="footer-sns">
+        <a href="https://www.instagram.com/mashike_official/" target="_blank" rel="noopener">Instagram</a>
+        <a href="#" target="_blank" rel="noopener">TikTok</a>
+        <a href="https://www.youtube.com/@mashike_official" target="_blank" rel="noopener">YouTube</a>
+        <a href="#" target="_blank" rel="noopener">LINE</a>
+      </div>
+      <p class="footer-copy">© 2026 増毛町観光協会</p>
+    </div>
+  </footer>
+
+  <script>
+// NAV
+
+window.addEventListener('load', () => {
+  setTimeout(() => { document.getElementById('loading').classList.add('hidden'); }, 1800);
+});
+
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); }, { passive: true });
+
+const menuOpen    = document.getElementById('menu-open');
+const menuClose   = document.getElementById('menu-close');
+const menuPanel   = document.getElementById('menu-panel');
+const menuOverlay = document.getElementById('menu-overlay');
+function openMenu()  { menuPanel.classList.add('open'); menuOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeMenu() { menuPanel.classList.remove('open'); menuOverlay.classList.remove('active'); document.body.style.overflow = ''; }
+menuOpen.addEventListener('click', openMenu);
+menuClose.addEventListener('click', closeMenu);
+menuOverlay.addEventListener('click', closeMenu);
+document.querySelectorAll('.menu-list a').forEach(l => l.addEventListener('click', closeMenu));
+
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => { entry.target.classList.add('visible'); }, i * 80);
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+// CARD REVEAL
+const cards = document.querySelectorAll('.shop-card');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 70);
+      obs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08 });
+cards.forEach(c => obs.observe(c));
+
+// FILTER
+const filterBtns = document.querySelectorAll('.filter-btn');
+const sections = {
+  seafood: document.getElementById('sec-seafood'),
+  fruit:   document.getElementById('sec-fruit'),
+  others:  document.getElementById('sec-others'),
+};
+const countEl = document.getElementById('count');
+const totalCards = document.querySelectorAll('.shop-card').length;
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cat = btn.dataset.cat;
+    if (cat === 'all') {
+      Object.values(sections).forEach(s => s.classList.remove('hidden'));
+      countEl.textContent = totalCards;
+    } else {
+      Object.keys(sections).forEach(key => {
+        sections[key].classList.toggle('hidden', key !== cat);
+      });
+      countEl.textContent = document.querySelectorAll(`.shop-card[data-cat="${cat}"]`).length;
+    }
+  });
+});
+  </script>
+</body>
+</html>
